@@ -192,26 +192,3 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: false
           file_glob: true
-      - uses: actions/checkout@v2
-        with:
-          repository: ${{ secrets.HOMEBREW_REPO }}
-          ref: main
-          token: ${{ secrets.GH_TOKEN }}
-          path: homebrew-repo
-      - run: |
-          cd homebrew-repo
-          sed -i "3s/.*/    sha256 \"$SHA256_ARM64\"/" Casks/ipatool.rb
-          sed -i "4s/.*/    url \"https:\/\/github.com\/majd\/ipatool\/releases\/download\/v${{ needs.get_version.outputs.version }}\/ipatool-${{ needs.get_version.outputs.version }}-macos-arm64.tar.gz\"/" Casks/ipatool.rb
-          sed -i "5s/.*/    binary \"bin\/ipatool-${{ needs.get_version.outputs.version }}-macos-arm64\", target: \"ipatool\"/" Casks/ipatool.rb
-          sed -i "7s/.*/    sha256 \"$SHA256_AMD64\"/" Casks/ipatool.rb
-          sed -i "8s/.*/    url \"https:\/\/github.com\/majd\/ipatool\/releases\/download\/v${{ needs.get_version.outputs.version }}\/ipatool-${{ needs.get_version.outputs.version }}-macos-amd64.tar.gz\"/" Casks/ipatool.rb
-          sed -i "9s/.*/    binary \"bin\/ipatool-${{ needs.get_version.outputs.version }}-macos-amd64\", target: \"ipatool\"/" Casks/ipatool.rb
-          sed -i "12s/.*/  version \"${{ needs.get_version.outputs.version }}\"/" Casks/ipatool.rb
-          git config --local user.name ${{ secrets.GH_NAME }}
-          git config --local user.email ${{ secrets.GH_EMAIL }}
-          git add Casks/ipatool.rb
-          git commit -m "Update ipatool to v${{ needs.get_version.outputs.version }}"
-          git push "https://${{ secrets.GH_TOKEN }}@github.com/${{ secrets.HOMEBREW_REPO }}.git" --set-upstream "main"
-        env:
-          SHA256_ARM64: ${{ steps.sha256.outputs.sha256_arm64 }}
-          SHA256_AMD64: ${{ steps.sha256.outputs.sha256_amd64 }}
